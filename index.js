@@ -3,28 +3,24 @@ const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
 const path = require("path");
-const fs = require("fs");
-
-//We define the output directory, where we want our generated html file to be located 
+const fs = require("fs"); 
 const OUTPUT_DIR = path.resolve(__dirname, "output")
 const outputPath = path.join(OUTPUT_DIR, "team.html");
-
-const render = require("./src/membersTemplate.js");
-
+const render = require("./src/renderTemplates.js");
 const teamMembers = [];
 const idArray = [];
 
 //This file will ask the user the information they want their team to have and extract the info to generate the html in membersTemplate.js
 
-function appMenu() {
+function app() {
 
   function createManager() {
     console.log("Please build your team");
     inquirer.prompt([
       {
         type: "input",
-        name: "managerName",
-        message: "What is the team manager's name?",
+        name: "manName",
+        message: "Please enter the manager´s name:",
         validate: answer => {
           if (answer !== "") {
             return true;
@@ -34,48 +30,39 @@ function appMenu() {
       },
       {
         type: "input",
-        name: "managerId",
-        message: "What is the team manager's id?",
+        name: "manId",
+        message: "Please enter the manager´s id:",
         validate: answer => {
-          const pass = answer.match(
-            /^[1-9]\d*$/
-          );
-          if (pass) {
+          if (answer !== "") {
             return true;
           }
-          return "Please enter a positive number greater than zero.";
+          return "Please enter at least one character.";
         }
       },
       {
         type: "input",
-        name: "managerEmail",
-        message: "What is the team manager's email?",
+        name: "manEmail",
+        message: "Please enter the manager´s e-mail:",
         validate: answer => {
-          const pass = answer.match(
-            /\S+@\S+\.\S+/
-          );
-          if (pass) {
+          if (answer !== "") {
             return true;
           }
-          return "Please enter a valid email address.";
+          return "Please enter at least one character.";
         }
       },
       {
         type: "input",
-        name: "managerOfficeNumber",
-        message: "What is the team manager's office number?",
+        name: "manOfficeNum",
+        message: "Please enter the manager´s office number:",
         validate: answer => {
-          const pass = answer.match(
-            /^[1-9]\d*$/
-          );
-          if (pass) {
+          if (answer !== "") {
             return true;
           }
-          return "Please enter a positive number greater than zero.";
+          return "Please enter at least one character.";
         }
       }
     ]).then(answers => {
-      const manager = new Manager(answers.managerName, answers.managerId, answers.managerEmail, answers.managerOfficeNumber);
+      const manager = new Manager(answers.manName, answers.manId, answers.manEmail, answers.manOfficeNum);
       teamMembers.push(manager);
       idArray.push(answers.managerId);
       createTeam();
@@ -87,7 +74,7 @@ function appMenu() {
     inquirer.prompt([
       {
         type: "list",
-        name: "memberChoice",
+        name: "memberSelect",
         message: "Which type of team member would you like to add?",
         choices: [
           "Engineer",
@@ -95,8 +82,8 @@ function appMenu() {
           "I don't want to add any more team members"
         ]
       }
-    ]).then(userChoice => {
-      switch (userChoice.memberChoice) {
+    ]).then(userInput => {
+      switch (userInput.memberSelect) {
         case "Engineer":
           addEngineer();
           break;
@@ -113,8 +100,8 @@ function appMenu() {
     inquirer.prompt([
       {
         type: "input",
-        name: "engineerName",
-        message: "What is your engineer's name?",
+        name: "engName",
+        message: "Please enter the engineer´s name:",
         validate: answer => {
           if (answer !== "") {
             return true;
@@ -124,41 +111,30 @@ function appMenu() {
       },
       {
         type: "input",
-        name: "engineerId",
-        message: "What is your engineer's id?",
+        name: "engId",
+        message: "Please enter the engineer´s ID:",
         validate: answer => {
-          const pass = answer.match(
-            /^[1-9]\d*$/
-          );
-          if (pass) {
-            if (idArray.includes(answer)) {
-              return "This ID is already taken. Please enter a different number.";
-            } else {
-              return true;
-            }
-
-          }
-          return "Please enter a positive number greater than zero.";
-        }
-      },
-      {
-        type: "input",
-        name: "engineerEmail",
-        message: "What is your engineer's email?",
-        validate: answer => {
-          const pass = answer.match(
-            /\S+@\S+\.\S+/
-          );
-          if (pass) {
+          if (answer !== "") {
             return true;
           }
-          return "Please enter a valid email address.";
+          return "Please enter at least one character.";
         }
       },
       {
         type: "input",
-        name: "engineerGithub",
-        message: "What is your engineer's GitHub username?",
+        name: "engEmail",
+        message: "Please enter the engineer´s e-mail:",
+        validate: answer => {
+          if (answer !== "") {
+            return true;
+          }
+          return "Please enter at least one character.";
+        }
+      },
+      {
+        type: "input",
+        name: "engGit",
+        message: "Please enter the engineer´s GitHub user:",
         validate: answer => {
           if (answer !== "") {
             return true;
@@ -167,7 +143,7 @@ function appMenu() {
         }
       }
     ]).then(answers => {
-      const engineer = new Engineer(answers.engineerName, answers.engineerId, answers.engineerEmail, answers.engineerGithub);
+      const engineer = new Engineer(answers.engName, answers.engId, answers.engEmail, answers.engGit);
       teamMembers.push(engineer);
       idArray.push(answers.engineerId);
       createTeam();
@@ -179,7 +155,7 @@ function appMenu() {
       {
         type: "input",
         name: "internName",
-        message: "What is your intern's name?",
+        message: "Please enter the intern´s name:",
         validate: answer => {
           if (answer !== "") {
             return true;
@@ -190,40 +166,29 @@ function appMenu() {
       {
         type: "input",
         name: "internId",
-        message: "What is your intern's id?",
+        message: "Please enter the intern´s ID:",
         validate: answer => {
-          const pass = answer.match(
-            /^[1-9]\d*$/
-          );
-          if (pass) {
-            if (idArray.includes(answer)) {
-              return "This ID is already taken. Please enter a different number.";
-            } else {
-              return true;
-            }
-
+          if (answer !== "") {
+            return true;
           }
-          return "Please enter a positive number greater than zero.";
+          return "Please enter at least one character.";
         }
       },
       {
         type: "input",
         name: "internEmail",
-        message: "What is your intern's email?",
+        message: "Please enter the intern´s e-mail:",
         validate: answer => {
-          const pass = answer.match(
-            /\S+@\S+\.\S+/
-          );
-          if (pass) {
+          if (answer !== "") {
             return true;
           }
-          return "Please enter a valid email address.";
+          return "Please enter at least one character.";
         }
       },
       {
         type: "input",
         name: "internSchool",
-        message: "What is your intern's school?",
+        message: "Please enter the intern´s school:",
         validate: answer => {
           if (answer !== "") {
             return true;
@@ -250,4 +215,4 @@ function appMenu() {
 
 }
 
-appMenu();
+app();
