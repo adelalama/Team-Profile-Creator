@@ -30,7 +30,7 @@ To use this app, you will have to have Node JS installed. After that you must in
 To use the application you must run the command index.js, this will start throwing questions at the user regarding their team members and their roles. After assigning the roles and exiting the command line, the resulting HTML page will be thrown in the output folder of the file.
 You will also be able to validate the functionality of the app through testing, to run tests check the testing section of this README.
 
-![gif tutorial](/dist/assets/readmetutorial.gif)
+![gif tutorial](./assets/readmetutorial.gif)
   
 ## Contributing
 
